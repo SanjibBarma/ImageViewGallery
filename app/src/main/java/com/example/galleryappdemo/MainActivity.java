@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -33,21 +35,22 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<ImageModel> imageList;
     ImageAdapter adapter;
-    String splitoutletNasmrfiles;
+    String splitOutletNameFiles;
     List<String> outletNameList = new ArrayList<>();
+    TextView countTextView;
 
     private static final String FILE_NAME = "outletName.txt";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerId);
+        countTextView = findViewById(R.id.countTextView);
 
+        getSupportActionBar().setTitle("Outlet Gallery");
 
         imageList = new ArrayList<>();
-
 
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
@@ -84,23 +87,45 @@ public class MainActivity extends AppCompatActivity {
             String str = files[i].getName();
             String[] parts = str.split("_");
             if (parts.length == 3) {
-                splitoutletNasmrfiles = parts[1];
+                splitOutletNameFiles = parts[1];
 
-                imageList.add(new ImageModel(files[i].getAbsolutePath(), splitoutletNasmrfiles));
-
+                imageList.add(new ImageModel(files[i].getAbsolutePath(), splitOutletNameFiles));
                 outletNameList.add(imageList.get(i).getOutletName());
 
                 //Log.d("OutletName", imageList.get(i).getOutletName());
-
             }
 
             adapter = new ImageAdapter(imageList, this);
-            GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 3);
+            GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 6);
+
+            /*GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 12);
+            layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
+                @Override
+                public int getSpanSize(int position) {
+                    switch (position % 7){
+                        case 0:
+                        case 1:
+                            return 4;
+                        case 2:
+                        case 3:
+                            return 3;
+                        default:
+                            return 3;
+                    }
+                }
+            });*/
+
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
-
         }
+
+        //setCount to text view
+        int itemCount = recyclerView.getAdapter().getItemCount();
+        countTextView.setText("Total Images: "+String.valueOf(itemCount));
+        //Log.d("ItemCount", String.valueOf(itemCount));
+        //countTextView.setText("Total Images: "+adapter.getItemCountAfterFilter());
+
 
         //save as txt file
 /*        FileOutputStream fos = null;
@@ -148,6 +173,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getOutletFilter().filter(newText);
+
+                //update setCount to text view
+                int filterItemCount = adapter.getItemCountAfterFilter();
+                countTextView.setText("Total Images: "+String.valueOf(filterItemCount));
+
+//                int itemCount = recyclerView.getAdapter().getItemCount();
+//                Log.d("ItemCount", String.valueOf(itemCount));
+
                 return false;
             }
         });

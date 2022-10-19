@@ -21,6 +21,7 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ViewHolder>
     ArrayList<ImageModel> imageArrayList;
     ArrayList<ImageModel> searchList;
     Context context;
+    List<ImageModel> filterList = new ArrayList<>();
 
     public ImageAdapter(ArrayList<ImageModel> imageArrayList, Context context) {
         this.imageArrayList = imageArrayList;
@@ -44,8 +45,11 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ViewHolder>
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String parseData = imageArrayList.get(position).getPath().toString();
-                context.startActivity(new Intent(context,FullScreenActivity.class).putExtra("parseData", parseData));
+                String imageData = imageArrayList.get(position).getPath();
+                String nameData = imageArrayList.get(position).getOutletName();
+                context.startActivity(new Intent(context,FullScreenActivity.class)
+                        .putExtra("parseData", imageData)
+                        .putExtra("imageName", nameData));
             }
         });
     }
@@ -55,6 +59,8 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ViewHolder>
         return imageArrayList.size();
     }
 
+
+
     public Filter getOutletFilter(){
         return outletFilter;
     }
@@ -62,7 +68,7 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ViewHolder>
     private Filter outletFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
-            List<ImageModel> filterList = new ArrayList<>();
+            filterList = new ArrayList<>();
             if (charSequence == null|| charSequence.length()==0){
 
                 filterList.addAll(searchList);
@@ -88,6 +94,10 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ViewHolder>
             notifyDataSetChanged();
         }
     };
+
+    public int getItemCountAfterFilter() {
+        return filterList.size();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
