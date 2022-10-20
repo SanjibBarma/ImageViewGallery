@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             adapter = new ImageAdapter(imageList, this);
-            GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 6);
+            GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 4);
 
             /*GridLayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 12);
             layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup(){
